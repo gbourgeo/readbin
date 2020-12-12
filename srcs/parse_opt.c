@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   elf_file_info_opt.c                                :+:      :+:    :+:   */
+/*   parse_opt.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/08 20:12:21 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/11/18 19:59:42 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/12/12 15:08:05 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "elf_file_info.h"
+#include "main.h"
 
 static void		check_error(char *value, t_opt *opt, size_t opt_size, t_env *e)
 {
@@ -36,7 +36,7 @@ static void		check_error(char *value, t_opt *opt, size_t opt_size, t_env *e)
 			ft_printf("\t\t-%s\t%s\n", opt[i].opt, opt[i].description);
 			i++;
 		}
-		exit(1);
+		ft_fatal(NULL, e);
 	}
 }
 
@@ -108,6 +108,14 @@ static int	opt_x(char **av, int *i, t_env *e, t_opt *opt)
 	return (0);
 }
 
+static int	opt_v(char **av, int *i, t_env *e, t_opt *opt)
+{
+	(void)av;
+	(void)i;
+	e->option |= opt->bit;
+	return (0);
+}
+
 static int	opt_LE(char **av, int *i, t_env *e, t_opt *opt)
 {
 	(void)av;
@@ -146,6 +154,7 @@ void		parse_opt(char **av, t_env *e)
 		{ "xw", "Print hexa/text/short    specified Section", OPT_XW_SECTION,    opt_x },
 		{ "xx", "Print hexa/text/char     specified Section", OPT_XX_SECTION,    opt_x },
 		{ "x",  "Print hexa/text          specified Section", OPT_X_SECTION,     opt_x },
+		{ "v",  "Print Symbol Versionning",                   OPT_V_SECTION,     opt_v },
 		{ "LE", "Force output to be print in little endian",  OPT_LITTLE_ENDIAN, opt_LE },
 		{ "BE", "Force output to be print in big endian",     OPT_BIG_ENDIAN,    opt_BE },
 		{ "H",  "Print Help",                                 OPT_HELP,          opt_H },

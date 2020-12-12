@@ -6,45 +6,55 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/11/18 20:12:42 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/12/12 15:02:59 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME 	= readbin
-ARCH	=
-ifeq ($(BIT32), 1)
-NAME	= readbin32
-ARCH	= -m32
+NAME = readbin
+ARCH =
+
+SYS_NAME := $(shell uname -s)
+SYS_ARCH := $(shell uname -m)
+
+ifeq ($(SYS_ARCH), x86)
+NAME = readbin32
+ARCH = -m32
 endif
 
-UNAME_S	:= $(shell uname -s)
-UNAME_M := $(shell uname -m)
+SRC_DIR = srcs/
+HDR_DIR = includes/
+OBJ_DIR = objs/
 
-ifeq ($(UNAME_S), Linux)
-SRC_D		= elf/
-SRC		= main.c			\
+SRC = main.c	\
+	print_hex.c	\
+	parse_opt.c	\
+
+OBJ = $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
+
+ifeq ($(SYS_NAME), Linux)
+ELF_SRC_D = $(SRC_DIR)elf/
+
+ELF_SRC = elf_file_info.c	\
 		elf_file_info_32.c	\
 		elf_file_info_64.c	\
-		elf_file_info_opt.c	\
-		print_hex.c			\
 
-ifeq ($(BIT32), 1)
-ASMFLAG		= -f elf32
-endif
+OBJ += $(addprefix $(OBJ_DIR), $(ELF_SRC:.c=.o))
 endif
 
-ifeq ($(UNAME_S), Darwin)
-SRC_D		= macho
-SRC		= macho_file_info.c
+# ifeq ($(BIT32), 1)
+# ASMFLAG		= -f elf32
+# endif
+
+ifeq ($(SYS_NAME), Darwin)
+MACHO_SRC_D = $(SRC_DIR)macho/
+MACHO_SRC = macho_file_info.c		\
+			macho_file_info_64.c	\
+
+OBJ += $(addprefix $(OBJ_DIR), $(MACHO_SRC:.c=.o))
 endif
 
-SRC_DIR	= $(SRC_D)srcs/
-HDR_DIR	= $(SRC_D)includes/
-OBJ_DIR	= $(SRC_D)obj/
-OBJ	= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
-
-LIB_DIR	= libft/
-LIB_HDR	= $(LIB_DIR)includes
+LIB_DIR = libft/
+LIB_HDR = $(LIB_DIR)includes
 
 WWW 	= gcc $(ARCH)
 FLAGS	= -Wall -Werror -Wextra
@@ -53,11 +63,21 @@ LIBS	= -L$(LIB_DIR) -lft
 
 all: lib $(NAME)
 
-$(NAME): $(OBJ) $(OBJ_S)
+$(NAME): $(OBJ)
 	$(WWW) -o $@ $^ $(LIBS)
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
+
+ifeq ($(SYS_NAME), Linux)
+$(OBJ_DIR)%.o: $(ELF_SRC_D)%.c
+	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
+endif
+
+ifeq ($(SYS_NAME), Darwin)
+$(OBJ_DIR)%.o: $(MACHO_SRC_D)%.c
+	$(WWW) $(FLAGS) -o $@ -c $< $(INCLUDE)
+endif
 
 .PHONY: lib clean fclean re
 

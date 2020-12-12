@@ -6,7 +6,7 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/18 19:52:36 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/11/18 20:15:39 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/11/28 13:57:16 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,6 +264,12 @@ void			elf_file_info_64(t_env *e)
 				}
 			}
 		}
+	}
+
+	/* Print Versioning */
+	if (e->option & OPT_V_SECTION)
+	{
+		
 	}
 
 	/* Prints X section */

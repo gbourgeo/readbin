@@ -1,51 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   macho_file_info.c                                  :+:      :+:    :+:   */
+/*   macho_file_info_64.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbourgeo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/05/15 22:57:09 by gbourgeo          #+#    #+#             */
-/*   Updated: 2018/06/06 03:56:21 by gbourgeo         ###   ########.fr       */
+/*   Created: 2020/12/12 14:47:20 by gbourgeo          #+#    #+#             */
+/*   Updated: 2020/12/12 14:53:30 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <mach-o/loader.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/mman.h>
-
-#include "ft_printf.h"
-#include "libft.h"
-
-#define DEF "\e[1;0m"
-#define CO1 "\e[1;31m"
-#define CO2 "\e[1;32m"
-#define CO3 "\e[1;33m"
-#define CO4 "\e[1;34m"
-#define CO5 "\e[1;35m"
-#define CO6 "\e[1;36m"
-
-#define MY_LITTLE_ENDIAN	1
-#define MY_BIG_ENDIAN		2
-
-void			print_hex(u_char *file, size_t size);
-void			file_info_32(void *file, int file_size);
-void			file_info_64(void *file, int file_size);
-
-int				ft_fatal(char *str)
-{
-	ft_printf("%s: ", str);
-	exit(1);
-}
-
-static int		is_macho(uint32_t magic)
-{
-	return (magic == MH_MAGIC || magic == MH_CIGAM ||
-			magic == MH_MAGIC_64 || magic == MH_CIGAM_64);
-}	
+#include "macho_file_info.h"
 
 static int		is_64(uint32_t magic)
 {
@@ -57,48 +22,7 @@ static int		is_swap(uint32_t magic)
 	return (magic == MH_MAGIC || magic == MH_MAGIC_64);
 }
 
-int main(int ac, char **av)
-{
-	int		fd;
-	int		file_size;
-	void	*file;
-
-	(void)ac;
-	if (!av[1]) {
-		ft_printf("arg missing\n");
-		return 1;
-	}
-	if ((fd = open(av[1], O_RDWR)) == -1) {
-		ft_printf("error open\n");
-		return 1;
-	}
-	if ((file_size = lseek(fd, 1, SEEK_END)) == -1) {
-		ft_printf("cant seek end of file\n");
-		return 1;
-	}
-	file = mmap(NULL, file_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
-	if (file == MAP_FAILED) {
-		ft_printf("cant map file\n");
-		return 1;
-	}
-	if (close(fd) == -1) {
-		perror("close()");
-	}
-
-	struct mach_header	*header;
-	uint32_t			magic;
-
-	header = (struct mach_header *)file;
-	magic = header->magic;
-	if (!is_macho(magic))
-		ft_fatal("Invalid MACHO file type");
-	if (header->filetype != MH_EXECUTE)
-		ft_fatal("Unsupported MACHO file type");
-
-	file_info_64(file, file_size);
-}
-
-void			file_info_64(void *file, int file_size)
+void			macho_file_info_64(void *file, int file_size)
 {
 	struct mach_header_64		*header = (struct mach_header_64 *)file;
 	uint32_t					offset = sizeof(*header);
@@ -121,8 +45,6 @@ void			file_info_64(void *file, int file_size)
 			  header->filetype, header->ncmds,
 			  header->sizeofcmds, header->flags);
 	ft_printf("\n");
-
-
 
 	ft_printf(CO3);
 	ft_printf("cmd\t\t cmdsize\t segname\t vmaddr\t\t vmsize\t fileoff\t filesize\t maxprot\t initprot\t nsects\t flags\n");
@@ -238,29 +160,4 @@ void			file_info_64(void *file, int file_size)
 /* 	ft_printf("%s %#x\n", section->sectname, section->size); */
 /* 	print_hex((u_char *)section, sizeof(*section)); */
 /* 	print_hex((u_char *)(file + section->offset), section->size); */
-}
-
-void			print_hex(u_char *file, size_t size)
-{
-	for (uint32_t i = 0; i < size; i++)
-	{
-		if (i % 16 == 0)
-			ft_printf("\n%.12p", i);
-		if (i % 4 == 0)
-			ft_printf(" ");
-		ft_printf("%02x", file[i]);
-		if (i && ((i + 1) == size || ((i + 1) % 16) == 0))
-		{
-			size_t j = i + 1;
-			size_t len = j % 16;
-			if (len)
-				len = (16 - len + ((16-len)/4) ) * 2 - 1;
-			write(1, "                                     ", len + 1);
-			for (uint32_t k = (len) ? j-j%16 : j-16;  k < j; k++)
-			{
-				ft_printf("%c", ft_isprint(file[k]) ? file[k] : '.');
-			}
-		}
-	}
-	ft_printf("\n");
 }

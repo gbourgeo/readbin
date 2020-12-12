@@ -6,11 +6,11 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/18 19:49:01 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/11/18 20:00:24 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/12/12 14:49:39 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "elf_file_info.h"
+#include "main.h"
 
 void			print_hex(u_char *file, size_t size, size_t offset, size_t endian, int xprint)
 {
