@@ -6,7 +6,7 @@
 #    By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/06/11 04:39:05 by gbourgeo          #+#    #+#              #
-#    Updated: 2020/12/12 15:02:59 by gbourgeo         ###   ########.fr        #
+#    Updated: 2020/12/12 15:10:02 by gbourgeo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,10 +40,6 @@ ELF_SRC = elf_file_info.c	\
 
 OBJ += $(addprefix $(OBJ_DIR), $(ELF_SRC:.c=.o))
 endif
-
-# ifeq ($(BIT32), 1)
-# ASMFLAG		= -f elf32
-# endif
 
 ifeq ($(SYS_NAME), Darwin)
 MACHO_SRC_D = $(SRC_DIR)macho/

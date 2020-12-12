@@ -6,13 +6,13 @@
 /*   By: gbourgeo <gbourgeo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/11 22:44:50 by gbourgeo          #+#    #+#             */
-/*   Updated: 2020/12/12 15:07:49 by gbourgeo         ###   ########.fr       */
+/*   Updated: 2020/12/12 15:11:28 by gbourgeo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.h"
 
-int			ft_fatal(char *str, t_env *e)
+int				ft_fatal(char *str, t_env *e)
 {
 	if (str)
 		ft_printf("%s: %s '%s'\n", e->prog, str, e->file);
